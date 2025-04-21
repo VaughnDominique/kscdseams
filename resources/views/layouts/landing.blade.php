@@ -84,7 +84,7 @@
                             <div class="hero-text">
                                 <div class="hero-title-wrap d-flex align-items-center mb-4">
 
-                                    <h1 class="hero-title ms-3 mb-0">Hello User!</h1>
+                                    <h1 class="hero-title ms-3 mb-0">Hello Cenphillians!</h1>
                                 </div>
 
                                 <h2 class="mb-4">Welcome to CPSU KSCD SeaMS.</h2>
