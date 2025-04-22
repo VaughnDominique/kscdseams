@@ -32,6 +32,11 @@
         <link href="{{ asset('landings/css/magnific-popup.css') }}" rel="stylesheet">
 
         <link href="{{ asset('landings/css/templatemo-first-portfolio-style.css') }}" rel="stylesheet">
+
+        <!-- DataTables  -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     </head>
     
     <body>
@@ -67,6 +72,10 @@
 
                         <li class="nav-item">
                             <a class="nav-link click-scroll" href="#section_4" style="font-size: 12pt; font-weight: bold;">About Us</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="#section_5" style="font-size: 12pt; font-weight: bold;">BABD</a>
                         </li>
                     </ul>
                 </div>
@@ -226,6 +235,32 @@
                     <div class="row align-items-center">
 
                         <div class="col-lg-12 col-12">
+                            <h3 class="text-center mb-5">Available</h3>
+                        </div>
+
+                        <table id="alltable" class="table table-hover" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Equipment Number</th>
+                                    <th>Equipment</th>
+                                    <th>Category</th>
+                                    <th>No. of Equipments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact section-padding" id="section_6">
+                <div class="container">
+                    <div class="row align-items-center">
+
+                        <div class="col-lg-12 col-12">
                             <h3 class="text-center mb-5">Software Tools</h3>
                         </div>
 
@@ -282,6 +317,20 @@
         <script src="{{ asset('landings/js/magnific-popup-options.js') }}"></script>
         <script src="{{ asset('landings/js/custom.js') }}"></script>
 
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+
         <!-- fullCalendar 2.2.5 -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/fullcalendar/fullcalendar.js') }}"></script>
@@ -297,5 +346,9 @@
         </script>
         <script src="{{ asset('js/fitnesslanding.js') }}"></script>
         <script src="{{ asset('js/checkeventcalen.js') }}"></script>
+        <script>
+            var dsdsd = "{{ route('getcatallRead') }}";
+        </script>
+        <script src="{{ asset('js/availequip.js') }}"></script>
     </body>
 </html>

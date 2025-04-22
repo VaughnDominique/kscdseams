@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Run the check every day at 8:00 AM
+        $schedule->command('check:overdue-items')->dailyAt('08:00');
     }
 
     /**

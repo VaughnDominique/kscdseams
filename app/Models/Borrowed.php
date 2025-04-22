@@ -8,9 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Borrowed extends Model
 {
     use HasFactory;
-
+    
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'borrowequip';
-
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'fname',
         'mname',
@@ -18,12 +28,13 @@ class Borrowed extends Model
         'equipid',
         'equiptype',
         'equipqty',
-        'borrowerid',
         'department',
         'borrowertype',
         'dateborrowed',
         'dateretured',
         'borrowedspan',
-        'stat'
+        'borrowerid',
+        'stat',
+        'email',
     ];
 }

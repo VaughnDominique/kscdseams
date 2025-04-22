@@ -1,0 +1,8 @@
+.quantity-low {
+    color: red;
+}
+
+.quantity-out {
+    color: red;
+    font-weight: bold;
+}

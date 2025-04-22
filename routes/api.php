@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Add this route to your API routes
+Route::get('/user-guide/content', 'UserGuideController@getContent')->name('api.user-guide.content');

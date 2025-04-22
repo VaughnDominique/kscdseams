@@ -19,6 +19,13 @@ class CategoryController extends Controller
         return view('equipment.listcategory');
     }
 
+    public function getcatallRead() 
+    {
+        $data = Category::orderBy('id', 'ASC')->get();
+
+        return response()->json(['data' => $data]);
+    }
+
     public function getcatSportsRead() 
     {
         $data = Category::where('typeequip', '=', 'Sports')->orderBy('id', 'ASC')->get();

@@ -6,6 +6,7 @@
     $fitappointActive = in_array($current_route, ['fitnessappointRead']) ? 'active' : '';
     $borrowActive = in_array($current_route, ['borrowRead']) ? 'active' : '';
     $logbookActive = in_array($current_route, ['logselectdateShow']) ? 'active' : '';
+    $userGuideActive = in_array($current_route, ['userGuide']) ? 'active' : '';
 @endphp
 
 <aside class="sidebarcustom">
@@ -78,6 +79,14 @@
         </ul>
 
         <ul class="nav-list secondary-nav">
+            <li class="nav-item">
+                <a href="{{ route('userGuide') }}" class="nav-link {{ $userGuideActive }}" id="user-guide-btn">
+                    <span class="nav-icon material-symbols-rounded">help_outline</span>
+                    <span class="nav-label">User Guide</span>
+                </a>
+                <span class="nav-tooltip">User Guide</span>
+            </li>
+            
             <li class="nav-item">
                 <a href="{{ route('logout') }}" class="nav-link">
                     <span class="nav-icon material-symbols-rounded">logout</span>

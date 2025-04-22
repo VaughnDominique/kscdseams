@@ -4,8 +4,23 @@ toastr.options = {
     "positionClass": "toast-bottom-right"
 };
 $(document).ready(function() {
-    $('#addBorrow').submit(function(event) {
+    $('#addBorrow').off('submit').on('submit', function(event) {
         event.preventDefault();
+        
+        // Check for past dates before submitting
+        const borrowDate = $('input[name="dateborrowed"]').val();
+        const returnDate = $('input[name="dateretured"]').val();
+        
+        if (isDateInPast(borrowDate)) {
+            toastr.error('Borrow date cannot be in the past');
+            return false;
+        }
+        
+        if (isDateInPast(returnDate)) {
+            toastr.error('Return date cannot be in the past');
+            return false;
+        }
+        
         var formData = $(this).serialize();
 
         $.ajax({
@@ -13,25 +28,68 @@ $(document).ready(function() {
             type: "POST",
             data: formData,
             success: function(response) {
-                if(response.success) {
-                    toastr.success(response.message);
-                    console.log(response);
+                // Handle both response formats (status and success)
+                if(response.status == 1 || response.success) {
+                    toastr.success(response.msg || response.message);
                     $(document).trigger('borrowAdded');
                     $('input[name="lname"]').val('');
                     $('input[name="fname"]').val('');
                     $('input[name="mname"]').val('');
                     $('input[name="equipqty"]').val('');
+                    $('input[name="email"]').val('');
                     $('#modal-borrower').modal('hide');
                 } else {
-                    toastr.error(response.message);
-                    console.log(response);
+                    if (response.error) {
+                        $.each(response.error, function(prefix, val) {
+                            $('.' + prefix + '_error').text(val[0]);
+                        });
+                    } else {
+                        toastr.error(response.msg || response.message || 'An error occurred');
+                    }
                 }
             },
-            error: function(xhr, status, error, message) {
-                var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).message : 'An error occurred';
-                toastr.error(errorMessage);
+            error: function(xhr, status, error) {
+                try {
+                    var errorObj = JSON.parse(xhr.responseText);
+                    if (errorObj.message) {
+                        toastr.error(errorObj.message);
+                    } else if (errorObj.error && errorObj.error.message) {
+                        toastr.error(errorObj.error.message);
+                    } else {
+                        toastr.error('An error occurred. Please try again.');
+                    }
+                } catch(e) {
+                    toastr.error('An unexpected error occurred.');
+                }
             }
         });
+    });
+    
+    // Helper function to check if date is in past
+    function isDateInPast(dateValue) {
+        const selectedDate = new Date(dateValue);
+        selectedDate.setHours(0, 0, 0, 0); // Reset time part for date comparison
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time part for date comparison
+        
+        return selectedDate < today;
+    }
+    
+    // Set min date for all date inputs
+    function setMinDates() {
+        const today = new Date().toISOString().split('T')[0];
+        $('input[type="date"]').attr('min', today);
+    }
+    
+    setMinDates();
+    
+    // Add validation to date inputs
+    $('input[name="dateborrowed"], input[name="dateretured"]').on('change', function() {
+        if (isDateInPast(this.value)) {
+            toastr.error('Cannot select a date in the past');
+            this.value = '';
+        }
     });
 
     var dataTable = $('#borrowTable').DataTable({
@@ -64,7 +122,14 @@ $(document).ready(function() {
             {
                 data: 'equipqty',
                 render: function(data, type, row) {
-                    return `<span class="badge badge-success">${data}</span>`;
+                    var lowQuantityThreshold = 3; // Define threshold here to match other locations
+                    
+                    // Use red badge for low quantities
+                    if (data <= lowQuantityThreshold) {
+                        return `<span class="badge badge-danger" style="color: white; font-weight: bold;">${data}</span>`;
+                    } else {
+                        return `<span class="badge badge-success">${data}</span>`;
+                    }
                 }
             },
             {data: 'dateborrowed',
@@ -115,6 +180,9 @@ $(document).ready(function() {
 });
 
 $(document).ready(function(){
+    // Define low quantity threshold
+    var lowQuantityThreshold = 0; // You can adjust this value as needed
+    
     $('#type').on('change', function(){
         var type = $(this).val();
 
@@ -126,7 +194,16 @@ $(document).ready(function(){
                     $('#equipid').empty().append('<option disabled selected> --Select-- </option>');
                     
                     $.each(data, function(key, value) {
-                        $('#equipid').append('<option value="'+ value.id +'" data-number-equip="'+ value.number_equip +'">'+ value.equipment +'</option>');
+                        // Add quantity in the option text with appropriate coloring
+                        var qtyDisplay = value.number_equip;
+                        var equipText = value.equipment;
+                        
+                        // If stock is low or out, add the qty info with appropriate styling
+                        if (value.number_equip <= lowQuantityThreshold) {
+                            equipText += ' <span style="color: red;">(' + qtyDisplay + ' left)</span>';
+                        }
+                        
+                        $('#equipid').append('<option value="'+ value.id +'" data-number-equip="'+ value.number_equip +'">'+ equipText +'</option>');
                     });
                 }
             });
@@ -139,9 +216,27 @@ $(document).ready(function(){
         var selectedOption = $(this).find('option:selected');
         var numberEquip = selectedOption.data('number-equip');
         
-        $('#availableQtyInfo').html('<span style="color: red;">Available Quantity: ' + numberEquip + '</span>');
+        // Check if quantity is low
+        if (numberEquip <= lowQuantityThreshold && numberEquip > 0) {
+            $('#availableQtyInfo').html(
+                '<span style="color: red; font-weight: bold;">Warning: Low Quantity Available: ' + numberEquip + '</span>'
+            );
+            toastr.warning('Selected equipment is low in stock (' + numberEquip + ' remaining)');
+        } else if (numberEquip == 0) {
+            $('#availableQtyInfo').html(
+                '<span style="color: red; font-weight: bold;">Equipment Out of Stock: ' + numberEquip + '</span>'
+            );
+            toastr.error('Selected equipment is currently out of stock!');
+            // Optionally disable the submit button
+            $('#addBorrowSubmitBtn').prop('disabled', true);
+        } else {
+            $('#availableQtyInfo').html('<span style="color: green;">Available Quantity: ' + numberEquip + '</span>');
+            // Re-enable submit button if it was disabled
+            $('#addBorrowSubmitBtn').prop('disabled', false);
+        }
 
-        $('input[name="equipqty"]').on('input', function() {
+        // Move the handler outside to prevent binding multiple times
+        $('input[name="equipqty"]').off('input').on('input', function() {
             var requestedQty = parseInt($(this).val());
             
             if (requestedQty > numberEquip) {
@@ -155,7 +250,6 @@ $(document).ready(function(){
         });
     });
 });
-
 
 $(document).on('click', '.btn-borrowedit', function() {
     var id = $(this).data('id');
@@ -188,6 +282,9 @@ $(document).on('click', '.btn-borrowedit', function() {
 });
 
 $(document).ready(function(){
+    // Define low quantity threshold (same as above)
+    var lowQuantityThreshold = 0;
+    
     $('#edittype').on('change', function(){
         var type = $(this).val();
 
@@ -212,7 +309,24 @@ $(document).ready(function(){
         var selectedOption = $(this).find('option:selected');
         var numberEquip = selectedOption.data('number-equip');
         
-        $('#editavailableQtyInfo').html('<span style="color: red;">Available Quantity: ' + numberEquip + '</span>');
+        // Check if quantity is low
+        if (numberEquip <= lowQuantityThreshold && numberEquip > 0) {
+            $('#editavailableQtyInfo').html(
+                '<span style="color: orange;">Warning: Low Quantity Available: ' + numberEquip + '</span>'
+            );
+            toastr.warning('Selected equipment is low in stock (' + numberEquip + ' remaining)');
+        } else if (numberEquip == 0) {
+            $('#editavailableQtyInfo').html(
+                '<span style="color: red;">Equipment Out of Stock: ' + numberEquip + '</span>'
+            );
+            toastr.error('Selected equipment is currently out of stock!');
+            // Optionally disable the submit button
+            $('#editBorrowSubmitBtn').prop('disabled', true);
+        } else {
+            $('#editavailableQtyInfo').html('<span style="color: green;">Available Quantity: ' + numberEquip + '</span>');
+            // Re-enable submit button if it was disabled
+            $('#editBorrowSubmitBtn').prop('disabled', false);
+        }
 
         $('input[name="equipqty"]').on('input', function() {
             var requestedQty = parseInt($(this).val());
@@ -229,6 +343,68 @@ $(document).ready(function(){
     });
 });
 
+$(document).ready(function() {
+    $('#editBorrowForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        var id = $('#editCatId').val();
+
+        $.ajax({
+            url: borrowUpdateRoute + '/' + id,
+            type: "PUT",
+            data: formData,
+            success: function(response) {
+                if(response.success) {
+                    toastr.success(response.message);
+                    $('#editBorrowModal').modal('hide');
+                    $(document).trigger('borrowAdded');
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).message : 'An error occurred';
+                toastr.error(errorMessage);
+            }
+        });
+    });
+});
+
+$(document).on('click', '.cat-delete', function() {
+    var id = $(this).val();
+    
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: borrowDeleteRoute + '/' + id,
+                type: "DELETE",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if(response.success) {
+                        toastr.success(response.message);
+                        $(document).trigger('borrowAdded');
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).message : 'An error occurred';
+                    toastr.error(errorMessage);
+                }
+            });
+        }
+    });
+});
 
 $(document).on('click', '.returned-item', function(e) {
     e.preventDefault();

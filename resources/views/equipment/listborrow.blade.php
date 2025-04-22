@@ -159,11 +159,13 @@
                         <div class="form-row">
                             <div class="col-md-4">
                                 <label for="dateborrowed">Date Borrowed</label>
-                                <input type="datetime-local" name="dateborrowed" class="form-control" id="dateborrowed">
+                                <input type="datetime-local" name="dateborrowed" class="form-control" id="dateborrowed" min="{{ date('Y-m-d\TH:i') }}">
+                                <span class="text-danger error-text dateborrowed_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="datereturned">Date Returned</label>
-                                <input type="datetime-local" name="dateretured" class="form-control" id="datereturned">
+                                <input type="datetime-local" name="dateretured" class="form-control" id="datereturned" min="{{ date('Y-m-d\TH:i') }}">
+                                <span class="text-danger error-text dateretured_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="borrowedspan">Borrow Span (Days)</label>
@@ -186,6 +188,24 @@
     var borrowCreateRoute = "{{ route('borrowCreate') }}";
     var borrowDateSpanRoute = "{{ route('getEquipmentByType', ':type') }}";
     var borrowReceivedRoute = "{{ route('returnitemBorrow') }}";
+    
+    // Set minimum date for date pickers
+    document.addEventListener('DOMContentLoaded', function() {
+        // Format current date and time for datetime-local input
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        const today = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Set min attribute for the date inputs in both forms
+        document.querySelectorAll('input[type="datetime-local"]').forEach(function(el) {
+            el.min = today;
+        });
+    });
 </script>
 
 <script>
@@ -241,9 +261,43 @@
                         count++;
                     }
                 }
-
+                
                 borrowedSpan.value = count;
             }
+        });
+        
+        // When submitting the borrow form, ensure email is included
+        $("#borrowForm").on('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData(this);
+            
+            $.ajax({
+                url: borrowCreateRoute,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.status == 1) {
+                        $('#modal-borrower').modal('hide');
+                        $('#borrowForm')[0].reset();
+                        $('#borrowTable').DataTable().ajax.reload();
+                        toastr.success(response.msg);
+                    } else {
+                        $.each(response.error, function(prefix, val) {
+                            $('.' + prefix + '_error').text(val[0]);
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 409) {
+                        toastr.error(xhr.responseJSON.message);
+                    } else {
+                        toastr.error('An error occurred. Please try again.');
+                    }
+                }
+            });
         });
     });
 </script>

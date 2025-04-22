@@ -76,6 +76,15 @@ class EventAppointmentController extends Controller
         $officeID = $request->input('officeID');
         $eventName = $request->input('eventname');
         $currentYear = date('Y', strtotime($start));
+        
+        // Check if the start date is in the past
+        $today = Carbon::today()->format('Y-m-d');
+        if ($start < $today) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Cannot create events in the past. Please select a future date.'
+            ], 422);
+        }
 
         $nameConflict = EventSched::whereYear('start', $currentYear)
             ->where('eventname', $eventName)
@@ -132,6 +141,17 @@ class EventAppointmentController extends Controller
         ]);
 
         try {
+            $start = $request->input('start');
+            
+            // Check if the start date is in the past
+            $today = Carbon::today()->format('Y-m-d');
+            if ($start < $today) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Cannot schedule events in the past. Please select a future date.'
+                ], 422);
+            }
+            
             $event = EventSched::findOrFail($request->input('id'));
 
             $conflict = EventSched::where('officeID', $request->input('officeID'))

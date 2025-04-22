@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Mail\OverdueItemNotification;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\Offices;
 use App\Models\Borrowed;
@@ -42,65 +44,77 @@ class BorrowController extends Controller
 
     public function borrowCreate(Request $request) 
     {
-        if ($request->isMethod('post')) {
-            $request->validate([
-                'fname' => 'required',
-                'mname' => 'required',
-                'lname' => 'required',
-                'equipid' => 'required',
-                'equiptype' => 'required',
-                'equipqty' => 'required',
-                'department' => 'required',
-                'borrowertype' => 'required',
-                'dateborrowed' => 'required',
-                'dateretured' => 'required',
-                'borrowedspan' => 'required',
+        $validator = Validator::make($request->all(), [
+            'fname' => 'required',
+            'mname' => 'required',
+            'lname' => 'required',
+            'equipid' => 'required',
+            'equiptype' => 'required',
+            'equipqty' => 'required',
+            'department' => 'required',
+            'borrowertype' => 'required',
+            'dateborrowed' => 'required',
+            'dateretured' => 'required',
+            'borrowedspan' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 0, 'error' => $validator->errors()->toArray()]);
+        }
+
+        $equipId = $request->input('equipid');
+        $requestedQty = (int) $request->input('equipqty');
+
+        $equipment = Category::find($equipId);
+        if (!$equipment) {
+            return response()->json(['error' => true, 'message' => 'Equipment not found.'], 404);
+        }
+
+        $totalAvailable = $equipment->number_equip;
+
+        if ($requestedQty > $totalAvailable) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Not enough equipment available. Only ' . $totalAvailable . ' item(s) left.'
+            ], 409);
+        }
+
+        try {
+            // Start a database transaction to ensure data consistency
+            DB::beginTransaction();
+            
+            // Create the borrow record
+            Borrowed::create([
+                'fname' => $request->input('fname'),
+                'mname' => $request->input('mname'),
+                'lname' => $request->input('lname'),
+                'equipid' => $request->input('equipid'),
+                'equiptype' => $request->input('equiptype'),
+                'equipqty' => $request->input('equipqty'),
+                'department' => $request->input('department'),
+                'borrowertype' => $request->input('borrowertype'),
+                'dateborrowed' => $request->input('dateborrowed'),
+                'dateretured' => $request->input('dateretured'),
+                'borrowedspan' => $request->input('borrowedspan'),
+                'borrowerid' => $request->input('borrowerid'),
+                'stat' => 'Borrowed',
+                'email' => $request->input('email'),
             ]);
+            
+            // Update the inventory by deducting the borrowed quantity
+            $equipment->number_equip = $equipment->number_equip - $requestedQty;
+            $equipment->save();
+            
+            // Commit transaction
+            DB::commit();
 
-            $equipId = $request->input('equipid');
-            $requestedQty = (int) $request->input('equipqty');
+            return response()->json(['status' => 1, 'msg' => 'Item borrowed successfully']);
 
-            $equipment = Category::find($equipId);
-            if (!$equipment) {
-                return response()->json(['error' => true, 'message' => 'Equipment not found.'], 404);
-            }
-
-            $totalAvailable = $equipment->number_equip;
-
-            $currentlyBorrowed = Borrowed::where('equipid', $equipId)
-                ->where('stat', '=', 'Borrowed') 
-                ->sum('equipqty');
-
-            $availableNow = $totalAvailable - $currentlyBorrowed;
-
-            if ($requestedQty > $availableNow) {
-                return response()->json([
-                    'error' => true,
-                    'message' => 'Not enough equipment available. Only ' . $availableNow . ' item(s) left.'
-                ], 409);
-            }
-
-            try {
-                Borrowed::create([
-                    'fname' => $request->input('fname'),
-                    'mname' => $request->input('mname'),
-                    'lname' => $request->input('lname'),
-                    'equipid' => $request->input('equipid'),
-                    'equiptype' => $request->input('equiptype'),
-                    'equipqty' => $request->input('equipqty'),
-                    'department' => $request->input('department'),
-                    'borrowertype' => $request->input('borrowertype'),
-                    'dateborrowed' => $request->input('dateborrowed'),
-                    'dateretured' => $request->input('dateretured'),
-                    'borrowedspan' => $request->input('borrowedspan'),
-                    'borrowerid' => $request->input('borrowerid'),
-                ]);
-
-                return response()->json(['success' => true, 'message' => 'Equipment borrowed successfully'], 200);
-
-            } catch (\Exception $e) {
-                return response()->json(['error' => true, 'message' => 'Failed to Borrow'], 404);
-           }
+        } catch (\Exception $e) {
+            // If an error occurs, rollback the transaction
+            DB::rollBack();
+            return response()->json(['error' => true, 'message' => 'Failed to Borrow: ' . $e->getMessage()], 500);
         }
     }
 
@@ -114,10 +128,62 @@ class BorrowController extends Controller
         }
 
         try {
-            $item->update(['stat' => 'Returned']);
-            return response()->json(['success' => true, 'message' => 'Item returned successfully']);
+            // Start a database transaction
+            DB::beginTransaction();
+            
+            // Get the equipment details and borrowed quantity
+            $equipment = Category::find($item->equipid);
+            $borrowedQty = $item->equipqty;
+            
+            // Only process if the item is currently borrowed
+            if ($item->stat === 'Borrowed') {
+                // Update borrow status
+                $item->update(['stat' => 'Returned']);
+                
+                // Add the quantity back to inventory
+                if ($equipment) {
+                    $equipment->number_equip = $equipment->number_equip + $borrowedQty;
+                    $equipment->save();
+                }
+            }
+            
+            // Commit transaction
+            DB::commit();
+            
+            return response()->json(['success' => true, 'message' => 'Item returned successfully and inventory updated']);
+            
         } catch (\Exception $e) {
-            return response()->json(['error' => true, 'message' => 'Failed to update item status'], 500);
+            // Rollback transaction on error
+            DB::rollBack();
+            return response()->json(['error' => true, 'message' => 'Failed to update item status: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function checkOverdueItems()
+    {
+        // Find all items that are overdue
+        $overdueItems = Borrowed::where('stat', 'Borrowed')
+            ->where('dateretured', '<', Carbon::now()->toDateString())
+            ->get();
+        
+        $notificationCount = 0;
+        
+        foreach ($overdueItems as $item) {
+            if ($item->email) {
+                // Send notification
+                try {
+                    Mail::to($item->email)->send(new OverdueItemNotification($item));
+                    $notificationCount++;
+                } catch (\Exception $e) {
+                    // Log error
+                    \Log::error("Failed to send overdue notification: " . $e->getMessage());
+                }
+            }
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Overdue check completed. {$notificationCount} notifications sent."
+        ]);
     }
 }

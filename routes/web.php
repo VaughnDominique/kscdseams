@@ -9,6 +9,7 @@ use App\Http\Controllers\EventAppointmentController;
 use App\Http\Controllers\FitnessAppointmentController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\UserGuideController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::group(['middleware'=>['guest']], function(){
     });
     Route::get('/fitness/appointments/fetch/ee', [FitnessAppointmentController::class, 'getfitnessShowland'])->name('getfitnessShowland');
     Route::get('/check/client/events/appointments/', [EventAppointmentController::class, 'checkeventschedShow'])->name('checkeventschedShow');
+    Route::get('/equip/avail', [CategoryController::class, 'getcatallRead'])->name('getcatallRead');
 
     Route::get('/login', [LoginController::class, 'login'])->name('login');
     Route::post('/login/process', [LoginController::class, 'processLogin'])->name('processLogin');
@@ -54,6 +56,8 @@ Route::group(['middleware'=>['login_auth']], function(){
         Route::post('/events/appointments/{id}', [EventAppointmentController::class, 'eventappointDelete'])->name('eventappointDelete');
         Route::get('/events/appointments/fetchtable', [EventAppointmentController::class, 'geteventschedRead'])->name('geteventschedRead');
         Route::get('/events/appointments/calendar', [EventAppointmentController::class, 'eventschedShow'])->name('eventschedShow');
+        Route::get('/event/edit/{id}', [EventAppointmentController::class, 'editEvent'])->name('editEvent');
+        Route::delete('/event/delete/{id}', [EventAppointmentController::class, 'deleteEvent'])->name('deleteEvent');
     });
 
     Route::prefix('/set/availability')->group(function () {
@@ -68,6 +72,7 @@ Route::group(['middleware'=>['login_auth']], function(){
         Route::get('/items/borrow/fetchlist', [BorrowController::class, 'getborrowRead'])->name('getborrowRead');
         Route::get('/items/fetch/{type}', [BorrowController::class, 'getEquipmentByType'])->name('getEquipmentByType');
         Route::post('/items/select/returned', [BorrowController::class, 'returnitemBorrow'])->name('returnitemBorrow');
+        Route::get('/items/borrow/check-overdue', [BorrowController::class, 'checkOverdueItems'])->name('checkOverdueItems');
     });  
 
     Route::prefix('/list/logbook/borrow')->group(function () {
@@ -75,4 +80,9 @@ Route::group(['middleware'=>['login_auth']], function(){
         Route::get('/items/perdate/search/result', [ReportsController::class, 'logselectdateShow'])->name('logselectdateShow');
         Route::get('/items/perdate/search/result/PDF/fetch', [ReportsController::class, 'logbookPDF'])->name('logbookPDF');
     });  
-});  
+
+    Route::prefix('/page')->group(function () {
+        Route::get('/user-guide', [UserGuideController::class, 'index'])->name('userGuide');
+    });  
+});
+

@@ -42,7 +42,7 @@
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-12">
-                                                <label class="badge badge-secondary">Serial Number:</label>
+                                                <label class="badge badge-secondary">Equipment Number:</label>
                                                 <input type="text" name="serialnumber" class="form-control form-control-sm">
                                             </div>
                                         </div>
@@ -158,11 +158,10 @@
                                             <table id="catsportTable" class="table table-hover" style="width: 100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Serial Number</th>
+                                                        <th>Equipment Number</th>
                                                         <th>Equipment</th>
                                                         <th>Category</th>
                                                         <th>No. of Equipments</th>
-                                                        {{-- <th>No. of Available</th> --}}
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -178,11 +177,10 @@
                                             <table id="catmusicTable" class="table table-hover" width="100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Serial Number</th>
+                                                        <th>Equipment Number</th>
                                                         <th>Equipment</th>
                                                         <th>Category</th>
                                                         <th>No. of Equipments</th>
-                                                        {{-- <th>No. of Available</th> --}}
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -198,11 +196,10 @@
                                             <table id="catpeequipTable" class="table table-hover" width="100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Serial Number</th>
+                                                        <th>Equipment Number</th>
                                                         <th>Equipment</th>
                                                         <th>Category</th>
                                                         <th>No. of Equipments</th>
-                                                        {{-- <th>No. of Available</th> --}}
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -218,7 +215,7 @@
                                             <table id="catutilityTable" class="table table-hover" style="width: 100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Serial Number</th>
+                                                        <th>Equipment Number</th>
                                                         <th>Equipment</th>
                                                         <th>Category</th>
                                                         <th>No. of Equipments</th>

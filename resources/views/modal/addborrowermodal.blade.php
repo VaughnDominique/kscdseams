@@ -56,6 +56,16 @@
 
                     <div class="form-group">
                         <div class="form-row">
+                            <div class="col-md-12">
+                                <label class="badge badge-secondary">Email Address:</label>
+                                <input type="email" name="email" class="form-control form-control-sm" placeholder="Enter email address">
+                                <span class="text-danger error-text email_error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-row">
                             <div class="col-md-6">
                                 <label class="badge badge-secondary">Office/College:</label>
                                 <select name="department" class="form-control form-control-sm select2">
@@ -81,7 +91,7 @@
                         <div class="form-row">
                             <div class="col-md-12">
                                 <label>Borrower ID Number:</label>
-                                <input type="text" name="borrowerid" class="form-control">
+                                <input type="text" name="borrowerid" class="form-control" placeholder="example: 2021-1479-K">
                             </div>
                         </div>
                     </div>
@@ -90,11 +100,13 @@
                         <div class="form-row">
                             <div class="col-md-4">
                                 <label for="dateborrowed">Date Borrowed</label>
-                                <input type="date" name="dateborrowed" class="form-control" id="dateborrowed">
+                                <input type="date" name="dateborrowed" class="form-control" id="dateborrowed" min="{{ date('Y-m-d') }}">
+                                <span class="text-danger error-text dateborrowed_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="datereturned">Date Returned</label>
-                                <input type="date" name="dateretured" class="form-control" id="datereturned">
+                                <input type="date" name="dateretured" class="form-control" id="datereturned" min="{{ date('Y-m-d') }}">
+                                <span class="text-danger error-text dateretured_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="borrowedspan">Borrow Span (Days)</label>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide Example</title>
+    <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../landings/css/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/user-guide.css">
+    <style>
+        /* Example nav styling */
+        .example-navbar {
+            background-color: #343a40;
+            padding: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .example-navbar .brand {
+            font-weight: bold;
+            margin-right: auto;
+        }
+        .example-navbar .nav-items {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Example navigation bar to show guide icon in nav -->
+    <div class="example-navbar">
+        <div class="brand">Application Name</div>
+        <div class="nav-items">
+            <a href="#" style="color: white; margin-right: 15px;">Dashboard</a>
+            <a href="#" style="color: white; margin-right: 15px;">Reports</a>
+            <a href="#" style="color: white; margin-right: 15px;">Settings</a>
+            <div id="nav-guide-placeholder"></div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <h1>Main Application Content</h1>
+        <p>This is where your main application content would be. The user guide will appear in a sidebar when the help button is clicked.</p>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        User Guide Toggle Button Options
+                    </div>
+                    <div class="card-body">
+                        <p>Default (bottom right):</p>
+                        <pre>const userGuide = new UserGuide();</pre>
+                        
+                        <p class="mt-3">With text label:</p>
+                        <pre>const userGuide = new UserGuide({
+    toggleButton: {
+        showLabel: true,
+        labelText: 'Help Guide'
+    }
+});</pre>
+                        
+                        <p class="mt-3">Different position:</p>
+                        <pre>const userGuide = new UserGuide({
+    toggleButton: {
+        position: 'top-right'  // 'top-right', 'top-left', 'bottom-left', 'bottom-right'
+    }
+});</pre>
+                        
+                        <p class="mt-3">In navigation bar:</p>
+                        <pre>const userGuide = new UserGuide({
+    toggleButton: {
+        position: 'fixed-nav',
+        showLabel: true,
+        icon: 'bi-info-circle'
+    }
+});
+document.getElementById('nav-guide-placeholder').appendChild(userGuide.getToggleButton());</pre>
+
+                        <p class="mt-3">In sidenav (above logout button):</p>
+                        <pre>const userGuide = new UserGuide({
+    toggleButton: {
+        position: 'fixed-nav',
+        showLabel: true,
+        icon: 'bi-question-circle',
+        labelText: 'Help'
+    }
+});
+// Add the guide button above logout in sidenav
+const logoutButton = document.querySelector('.sidenav-logout');
+const sidenavMenu = document.querySelector('.sidenav-menu');
+sidenavMenu.insertBefore(userGuide.getToggleButton(), logoutButton);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../plugins/jquery/jquery.min.js"></script>
+    <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/user-guide.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example: Initialize the user guide with the toggle button in navigation
+            const userGuide = new UserGuide({
+                toggleButton: {
+                    position: 'fixed-nav',
+                    showLabel: true,
+                    icon: 'bi-info-circle',
+                    labelText: 'User Guide'
+                }
+            });
+            
+            // Append the toggle button to the navigation bar
+            document.getElementById('nav-guide-placeholder').appendChild(userGuide.getToggleButton());
+            
+            // Add steps to the guide
+            userGuide.addStep(
+                'Welcome to the User Guide', 
+                '<p>This guide will walk you through how to use the system step by step.</p>',
+                '../examples/images/welcome.png'
+            );
+            
+            userGuide.addStep(
+                'Dashboard Overview', 
+                '<p>The dashboard provides an overview of your key metrics and activities.</p><ol><li>View your statistics at a glance</li><li>Access recent activities</li><li>Navigate to various sections using the sidebar menu</li></ol>',
+                '../examples/images/dashboard.png'
+            );
+            
+            userGuide.addStep(
+                'Creating a New Record', 
+                '<p>To create a new record, follow these steps:</p><ol><li>Click the "Add New" button</li><li>Fill in the required fields in the form</li><li>Click "Save" to submit your record</li></ol>',
+                '../examples/images/create-record.png'
+            );
+            
+            userGuide.addStep(
+                'Video Tutorial: Advanced Features', 
+                '<p>Watch this video to learn about advanced features:</p>',
+                '../examples/videos/tutorial.mp4',
+                'video'
+            );
+            
+            userGuide.addStep(
+                'Need More Help?', 
+                '<p>If you need additional assistance, you can:</p><ul><li>Contact our support team</li><li>Visit our knowledge base</li><li>Join our community forum</li></ul>',
+                '../examples/images/help.png'
+            );
+        });
+    </script>
+</body>
+</html>

@@ -15,6 +15,8 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/custom.css') }}">
+    <!-- User Guide CSS -->
+    <link rel="stylesheet" href="{{ asset('css/user-guide.css') }}">
     <!-- fullCalendar -->
     <link rel="stylesheet" href="{{ asset('plugins/fullcalendar/fullcalendar.css') }}">
     <!-- DataTables  -->
