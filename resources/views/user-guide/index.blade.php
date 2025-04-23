@@ -19,7 +19,7 @@
                     <div class="container-fluid">
                         <div class="row mb-2">
                             <div class="col-sm-6">
-                                <h1 class="m-0">User Guide</h1>
+                                <h1 class="m-0">Admin User Guide</h1>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-right">
@@ -32,23 +32,6 @@
                 </div>
                 
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <p>The KSCD Management System allows the admin to:</p>
-                                <ul>
-                                    <li>Manage sports and fitness lab equipment inventory.</li>
-                                    <li>Monitor and approve equipment reservations.</li>
-                                    <li>Track gym usage and control capacity.</li>
-                                    <li>Manage appointment schedules.</li>
-                                    <li>Send email notifications for overdue equipment.</li>
-                                    <li>View reports and update system availability.</li>
-                                </ul>
-                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#guideModal1">View Complete Guide</a>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -132,6 +115,139 @@
                                             <ol>
                                                 <li>Navigate to Reservation > All Records to view history and active bookings.</li>
                                             </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-light">
+                                                <h5><i class="fas fa-calendar-alt"></i> 📆 5. Admin Calendar Management</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p><strong>📌 To Add an Event or Update Availability:</strong></p>
+                                                <ol>
+                                                    <li>Go to Calendar > Admin Calendar.</li>
+                                                    <li>Click on the desired date.</li>
+                                                    <li>Add:
+                                                        <ul>
+                                                            <li>Event Title (e.g., "Maintenance Day")</li>
+                                                            <li>Time and Description</li>
+                                                            <li>Availability Status (Available/Unavailable)</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>Click Save.</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h5><i class="fas fa-dumbbell"></i> 🏋️ 6. Managing Gym Appointments</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ol>
+                                            <li>Go to Gym Scheduler.</li>
+                                            <li>View the schedule and check:
+                                                <ul>
+                                                    <li>Maximum capacity</li>
+                                                    <li>Time slots</li>
+                                                    <li>Users booked</li>
+                                                </ul>
+                                            </li>
+                                            <li>Click Mark as Full or Approve New Booking.</li>
+                                            <li>To cancel, click Remove Appointment.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-light">
+                                                <h5><i class="fas fa-envelope"></i> 📬 7. Email Notifications for Overdue Equipment</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <ul>
+                                                    <li>The system automatically checks overdue returns based on the date of use.</li>
+                                                    <li>Admin can view overdue records under Reports > Overdue List.</li>
+                                                    <li>Emails are sent to the borrower's email (no login needed) using the stored data.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-light">
+                                                <h5><i class="fas fa-chart-bar"></i> 📈 8. Viewing Reports</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <ol>
+                                                    <li>Go to Reports tab.</li>
+                                                    <li>Choose from:
+                                                        <ul>
+                                                            <li>Equipment Usage Logs</li>
+                                                            <li>Reservation History</li>
+                                                            <li>Overdue Reports</li>
+                                                            <li>Daily/Monthly Reports</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>Export reports as PDF or Excel if needed.</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-light">
+                                                <h5><i class="fas fa-sign-out-alt"></i> 🛑 9. Logging Out</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <ol>
+                                                    <li>Click your profile icon or username at the top-right.</li>
+                                                    <li>Select Logout to exit the system securely.</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-light">
+                                                <h5><i class="fas fa-lightbulb"></i> 📝 Admin Tips</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <ul>
+                                                    <li>Regularly back up your database.</li>
+                                                    <li>Ensure all equipment statuses are updated after use.</li>
+                                                    <li>Review calendar availability weekly to avoid conflicts.</li>
+                                                    <li>Maintain a clear log of users and reservations for auditing.</li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

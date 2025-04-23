@@ -154,6 +154,23 @@
             @endif
         });
     </script>
+    <script>
+        setInterval(function () {
+            $.ajax({
+                url: '{{ route("borrow.sendEmails") }}',
+                type: 'GET',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    console.log(response.message);
+                },
+                error: function (xhr) {
+                    console.error('Failed to send emails');
+                }
+            });
+        }, 1000); // Check every 1 second
+    </script>
 </body>
 
 </html>

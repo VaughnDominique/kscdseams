@@ -35,6 +35,7 @@ class Borrowed extends Model
         'borrowedspan',
         'borrowerid',
         'stat',
+        'mail_stat',
         'email',
     ];
 }

@@ -34,10 +34,10 @@
 
             <li class="nav-item">
                 <a href="{{ route('categoryRead') }}" class="nav-link {{ $categoryActive }}">
-                    <span class="nav-icon material-symbols-rounded">category</span>
-                    <span class="nav-label">Category</span>
+                    <span class="nav-icon material-symbols-rounded">Inventory</span>
+                    <span class="nav-label">Inventory</span>
                 </a>
-                <span class="nav-tooltip">Category</span>
+                <span class="nav-tooltip">Inventory</span>
             </li>
 
             <li class="nav-item">

@@ -35,6 +35,8 @@
                     <th style="border: 1px solid black; padding: 15px; font-size: 20px; font-family: Arial;">Department</th>
                     <th style="border: 1px solid black; padding: 15px; font-size: 20px; font-family: Arial;">Borrower Type</th>
                     <th style="border: 1px solid black; padding: 15px; font-size: 20px; font-family: Arial;">Status</th>
+                    <th style="border: 1px solid black; padding: 15px; font-size: 20px; font-family: Arial;">Date Returned</th>
+                    <th style="border: 1px solid black; padding: 15px; font-size: 20px; font-family: Arial;">Time Returned</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +49,8 @@
                          <td style="border: 1px solid black; width: 20%; padding: 10px; height: 10px;">{{ $dataelogs->department }}</td>
                          <td style="border: 1px solid black; width: 20%; padding: 10px; height: 10px;">{{ $dataelogs->borrowertype }}</td>
                          <td style="border: 1px solid black; width: 20%; padding: 10px; height: 10px;">{{ $dataelogs->stat }}</td>
+                         <td style="border: 1px solid black; width: 20%; padding: 10px; height: 10px;">{{ $dataelogs->datereturned ?? 'Not returned yet' }}</td>
+                         <td style="border: 1px solid black; width: 20%; padding: 10px; height: 10px;">{{ $dataelogs->updated_at && $dataelogs->stat == 'Returned' ? $dataelogs->updated_at->format('h:i:s A') : 'Not returned yet' }}</td>
                     </tr>
                @endforeach
             </tbody>

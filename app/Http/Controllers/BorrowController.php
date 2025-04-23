@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\OverdueItemNotification;
 use Illuminate\Support\Facades\Mail;
-
 use App\Models\Offices;
 use App\Models\Borrowed;
 use App\Models\Category;
@@ -186,4 +185,35 @@ class BorrowController extends Controller
             'message' => "Overdue check completed. {$notificationCount} notifications sent."
         ]);
     }
+
+    public function sendEmails()
+    {
+        $today = now()->format('Y-m-d');
+    
+        $borrows = DB::table('borrowequip')
+        ->join('invtcategory', 'borrowequip.equipid', '=', 'invtcategory.id')
+        ->whereDate(DB::raw("DATE_SUB(borrowequip.dateretured, INTERVAL borrowequip.borrowedspan DAY)"), '=', $today)
+        ->whereNotNull('borrowequip.email')
+        ->where('borrowequip.mail_stat', 0)
+        ->select('borrowequip.*', 'invtcategory.equipment as equip_name')
+        ->get();
+    
+        foreach ($borrows as $borrow) {
+            $message = "Hello {$borrow->fname} {$borrow->lname},\n\n"
+                     . "This is a friendly reminder to return the borrowed equipment: {$borrow->equip_name} "
+                     . "by {$borrow->dateretured}.\n\nThank you!";
+        
+            Mail::raw($message, function ($mail) use ($borrow) {
+                $mail->to($borrow->email)
+                     ->subject('Equipment Return Reminder');
+            });
+        
+            DB::table('borrowequip')
+                ->where('id', $borrow->id)
+                ->update(['mail_stat' => 1]);
+        }        
+    
+        return response()->json(['message' => 'Emails sent and mail_stat updated.']);
+    }    
+    
 }

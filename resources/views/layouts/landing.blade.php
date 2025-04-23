@@ -235,7 +235,7 @@
                     <div class="row align-items-center">
 
                         <div class="col-lg-12 col-12">
-                            <h3 class="text-center mb-5">Available</h3>
+                            <h3 class="text-center mb-5">Available Equipments</h3>
                         </div>
 
                         <table id="alltable" class="table table-hover" style="width: 100%">

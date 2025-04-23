@@ -21,6 +21,7 @@ use App\Http\Controllers\UserGuideController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/send-borrow-emails', [BorrowController::class, 'sendEmails'])->name('borrow.sendEmails');
 
 Route::group(['middleware'=>['guest']], function(){
     Route::get('/', function () {
