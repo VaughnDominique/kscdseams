@@ -158,7 +158,7 @@
         setInterval(function () {
             $.ajax({
                 url: '{{ route("borrow.sendEmails") }}',
-                type: 'GET',
+                type: "POST",
                 data: {
                     _token: '{{ csrf_token() }}'
                 },
