@@ -188,7 +188,7 @@ class BorrowController extends Controller
 
     public function sendEmails()
     {
-        $today = now()->format('Y-m-d');
+        $today = now()->format('D-m-y');
     
         $borrows = DB::table('borrowequip')
         ->join('invtcategory', 'borrowequip.equipid', '=', 'invtcategory.id')
