@@ -18,7 +18,6 @@ class EventAppointmentController extends Controller
     public function eventappointRead()
     {
         $office = Offices::orderBy('office_abbr', 'ASC')->get();
-
         return view('events.appointevent', compact('office'));
     }
 
@@ -61,7 +60,6 @@ class EventAppointmentController extends Controller
         return response()->json($eventData);
     }
 
-
     public function eventappointCreate(Request $request) 
     {
         $request->validate([
@@ -73,11 +71,9 @@ class EventAppointmentController extends Controller
 
         $start = $request->input('start');
         $end = $request->input('end');
-        $officeID = $request->input('officeID');
         $eventName = $request->input('eventname');
-        $currentYear = date('Y', strtotime($start));
-        
-        // Check if the start date is in the past
+        $officeID = $request->input('officeID');
+
         $today = Carbon::today()->format('Y-m-d');
         if ($start < $today) {
             return response()->json([
@@ -86,33 +82,29 @@ class EventAppointmentController extends Controller
             ], 422);
         }
 
-        $nameConflict = EventSched::whereYear('start', $currentYear)
-            ->where('eventname', $eventName)
+        // ❗ Check if same name + same start date + same start time already exists
+        $conflictSameNameTime = EventSched::where('eventname', $eventName)
+            ->whereDate('start', Carbon::parse($start)->toDateString())
+            ->whereTime('start', Carbon::parse($start)->toTimeString())
             ->exists();
 
-        if ($nameConflict) {
+        if ($conflictSameNameTime) {
             return response()->json([
                 'error' => true,
-                'message' => 'An event with the same name already exists for this year.'
+                'message' => 'An event with the same name and start time already exists on this day.'
             ], 409);
         }
 
-        $conflict = EventSched::where('officeID', $officeID)
-            ->where(function ($query) use ($start, $end) {
-                if ($start === $end) {
-                    $query->where('start', '<=', $start)
-                        ->where('end', '>=', $end);
-                } else {
-                    $query->where('start', '<', $end)
-                        ->where('end', '>', $start);
-                }
-            })
-            ->exists();
+        // Optional: Check time overlap with other events
+        $conflict = EventSched::where(function ($query) use ($start, $end) {
+                $query->where('start', '<', $end)
+                      ->where('end', '>', $start);
+            })->exists();
 
         if ($conflict) {
             return response()->json([
                 'error' => true,
-                'message' => 'Event schedule conflicts with an existing event.'
+                'message' => 'Event schedule conflicts with another event.'
             ], 409);
         }
 
@@ -127,8 +119,7 @@ class EventAppointmentController extends Controller
             'success' => true,
             'message' => 'Event Schedule successfully created'
         ], 200);
-    }  
-
+    }
 
     public function eventappointUpdate(Request $request) 
     {
@@ -142,8 +133,9 @@ class EventAppointmentController extends Controller
 
         try {
             $start = $request->input('start');
-            
-            // Check if the start date is in the past
+            $end = $request->input('end');
+            $eventName = $request->input('eventname');
+
             $today = Carbon::today()->format('Y-m-d');
             if ($start < $today) {
                 return response()->json([
@@ -151,35 +143,44 @@ class EventAppointmentController extends Controller
                     'message' => 'Cannot schedule events in the past. Please select a future date.'
                 ], 422);
             }
-            
+
             $event = EventSched::findOrFail($request->input('id'));
 
+            // Check conflict excluding current event
             $conflict = EventSched::where('officeID', $request->input('officeID'))
-                ->where('id', '!=', $request->input('id')) // Exclude the current event
-                ->where(function ($query) use ($request) {
-                    $query->whereBetween('start', [$request->input('start'), $request->input('end')])
-                          ->orWhereBetween('end', [$request->input('start'), $request->input('end')])
-                          ->orWhere(function ($query) use ($request) {
-                              $query->where('start', '<=', $request->input('start'))
-                                    ->where('end', '>=', $request->input('end'));
+                ->where('id', '!=', $request->input('id'))
+                ->where(function ($query) use ($start, $end) {
+                    $query->whereBetween('start', [$start, $end])
+                          ->orWhereBetween('end', [$start, $end])
+                          ->orWhere(function ($q) use ($start, $end) {
+                              $q->where('start', '<=', $start)
+                                ->where('end', '>=', $end);
                           });
-                })
-                ->exists();
+                })->exists();
 
             if ($conflict) {
-                return response()->json(['error' => true, 'message' => 'Event schedule conflicts with an existing event'], 409);
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Event schedule conflicts with an existing event'
+                ], 409);
             }
 
             $event->update([
-                'eventname' => $request->input('eventname'),
-                'start' => $request->input('start'),
-                'end' => $request->input('end'),
+                'eventname' => $eventName,
+                'start' => $start,
+                'end' => $end,
                 'officeID' => $request->input('officeID'),
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Event Schedule updated successfully'], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Event Schedule updated successfully'
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => true, 'message' => 'Failed to update Event Schedule'], 500);
+            return response()->json([
+                'error' => true,
+                'message' => 'Failed to update Event Schedule'
+            ], 500);
         }
     }
 
@@ -188,6 +189,9 @@ class EventAppointmentController extends Controller
         $event = EventSched::find($id);
         $event->delete();
 
-        return response()->json(['success'=> true, 'message'=>'Deleted Successfully',]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Deleted Successfully'
+        ]);
     }
 }

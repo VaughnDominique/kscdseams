@@ -38,6 +38,37 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     </head>
+
+    <style>
+        /* Center the logo and text in the hero section */
+        @media (max-width: 768px) {
+            .hero {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 50px 0;
+            }
+
+            .hero .hero-text {
+                margin-bottom: 20px;
+            }
+
+            .hero .hero-title-wrap {
+                justify-content: center;
+            }
+
+            .hero .hero-title {
+                font-size: 28px;
+            }
+
+            .hero .hero-image {
+                max-width: 80%;
+                margin-top: 20px;
+            }
+        }
+    </style>
     
     <body>
         <nav class="navbar navbar-expand-lg">
@@ -49,12 +80,6 @@
 
                 <a href="index.html" class="navbar-brand mx-auto mx-lg-0">KSCDSeaMS</a>
 
-                <div class="d-flex align-items-center d-lg-none">
-                    <i class="navbar-icon bi-telephone-plus me-3"></i>
-                    <a class="custom-btn btn" href="#section_5">
-                        120-240-9600
-                    </a>
-                </div>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5">
@@ -71,12 +96,13 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_4" style="font-size: 12pt; font-weight: bold;">About Us</a>
+                            <a class="nav-link click-scroll" href="#section_4" style="font-size: 12pt; font-weight: bold;">Equipments</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_5" style="font-size: 12pt; font-weight: bold;">BABD</a>
+                            <a class="nav-link click-scroll" href="#section_5" style="font-size: 12pt; font-weight: bold;">About Us</a>
                         </li>
+
                     </ul>
                 </div>
 
@@ -90,7 +116,7 @@
                     <div class="row">
 
                         <div class="col-lg-7 col-12">
-                            <div class="hero-text">
+                            <div class="hero-text" style="margin-top: 80px;">
                                 <div class="hero-title-wrap d-flex align-items-center mb-4">
 
                                     <h1 class="hero-title ms-3 mb-0">Hello Cenphillians!</h1>
@@ -101,7 +127,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-5 col-12 position-relative">
+                        <div class="col-lg-5 col-12 d-flex justify-content-center align-items-center position-relative order-first order-lg-last d-none d-md-flex" style="">
                             <img src="{{ asset('dist/img/kscdlogo.png') }}" class="hero-image img-fluid" alt="">
                         </div>
 
@@ -169,8 +195,34 @@
                 </div>
             </section>
 
+            <section class="contact section-padding" id="section_4">
+                <div class="container">
+                    <div class="row align-items-center">
 
-            <section class="projects section-padding" id="section_4">
+                        <div class="col-lg-12 col-12">
+                            <h3 class="text-center mb-5">Available Equipments</h3>
+                        </div>
+
+                        <table id="alltable" class="table table-hover" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Equipment Number</th>
+                                    <th>Equipment</th>
+                                    <th>Category</th>
+                                    <th>No. of Equipments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="projects section-padding" id="section_5">
                 <div class="container">
                     <div class="row">
 
@@ -225,32 +277,6 @@
                                 </a>
                             </div>
                         </div>
-
-                    </div>
-                </div>
-            </section>
-
-            <section class="contact section-padding" id="section_5">
-                <div class="container">
-                    <div class="row align-items-center">
-
-                        <div class="col-lg-12 col-12">
-                            <h3 class="text-center mb-5">Available Equipments</h3>
-                        </div>
-
-                        <table id="alltable" class="table table-hover" style="width: 100%">
-                            <thead>
-                                <tr>
-                                    <th>Equipment Number</th>
-                                    <th>Equipment</th>
-                                    <th>Category</th>
-                                    <th>No. of Equipments</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
 
                     </div>
                 </div>
@@ -333,7 +359,7 @@
 
         <!-- fullCalendar 2.2.5 -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
-        <script src="{{ asset('plugins/fullcalendar/fullcalendar.js') }}"></script>
+        <script src="{{ asset('plugins/fullcalendar/fullcalendar.js') }}"></script> 
     
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
